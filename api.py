@@ -6,7 +6,6 @@ import pandas as pd
 import os
 from flask_cors import CORS
 
-
 # Flask app and configurations
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "SECURITY"
@@ -24,7 +23,6 @@ transactions_collection = db["transactions"]
 # Ensure unique email for users
 users_collection.create_index("email", unique=True)
 
-
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -38,7 +36,6 @@ def register():
     data = request.json
     if users_collection.find_one({"email": data["email"]}):
         return jsonify({"error": "User already exists"}), 400
-    
     
     hashed_password = bcrypt.generate_password_hash(data["password"]).decode("utf-8")
     users_collection.insert_one({
@@ -109,6 +106,15 @@ def delete_user():
 
     return jsonify({'message': f'User {email} deleted successfully'}), 200
 
+#categorize transactions as it is in the code
+@app.route('/categorize_transactions', methods=['POST'])
+@jwt_required()
+def categorize_transactions():
+    data = request.json.get('transactions', [])
+    df = pd.DataFrame(data)
+    categorizer = TransactionCategorizer()
+    categorized_data = categorizer.categorize(df)
+    return categorized_data.to_json(orient='records'), 200
 
 # Function to run the Flask app programmatically
 def start_api():

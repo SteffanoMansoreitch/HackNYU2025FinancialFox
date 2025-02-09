@@ -2,6 +2,13 @@ import requests
 import time
 import threading
 from api import start_api  # Import from server.py
+from pyngrok import ngrok
+
+# Start ngrok tunnel
+public_url = ngrok.connect(5000)
+print(public_url)
+ngrok_url = public_url.public_url
+
 
 BASE_URL = "http://localhost:5000"
 EMAIL = "yuri@gmail.com"
