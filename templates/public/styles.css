@@ -1,0 +1,116 @@
+body{
+    font-family: "quicksand", sans-serif;
+    background-color: black;
+}
+
+.name{
+    display: flex;
+    justify-content: center;
+}
+.profile-name{
+    color: white;
+    font-weight: 1000;
+    font-size: 300%;
+} 
+.profile{
+    margin:auto;
+    background-image: url("/images/cottage.jpg");
+    background-size: 110% 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll;
+    max-width: 85%;
+    height:60vh;
+    display:grid;
+    grid-template-rows: 1fr 1fr;
+    border:1px solid black;
+    border-radius: 80px;
+    transition: ease-in-out 0.5s;
+}
+.profile:hover{
+    background-size: 120% 110%;
+    cursor: pointer;
+}
+
+.petname{
+    
+    background-color: rgb(154, 218, 133);
+    font-family: "quicksand" sans-serif;
+    font-size: 200%;
+    border-radius: 10px;
+    color: white;
+    padding: 8px;
+    border: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 10px;
+    padding-right:10px;
+    border-radius: 15px;
+    margin:auto;
+}
+.pet-profile{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.sprite {
+    width: 180px; 
+    height: 270px;
+    background-image: url('/images/spritesheet.png');
+    background-position: -88px -90px;
+    background-size: 950%;
+}
+.finance-data{
+    border: 1px solid lightblue;
+    border-radius: 15px;;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: lightgoldenrodyellow;
+    width: 90%;
+    margin:auto;
+    margin-top: 10%;
+    height: 60vh;
+}
+.data-container{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+}
+.chart-container{
+    display: flex;
+    flex-direction: column;
+    gap:20px;
+    height: 100%;
+    align-items: flex-start;
+    width: 80%;
+    padding-bottom: 30px;
+}
+.chart-bar{ 
+    position: relative;
+    background-color: lightblue;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    transition: width 0.5s ease;
+    width: var(--expense);
+    height:20%;
+}
+.expense{
+    margin-left: 0;
+}
+.progress-data{
+    border: 1px solid lightblue;
+    border-radius: 15px;;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: lightgoldenrodyellow;
+    width: 90%;
+    margin:auto;
+    margin-top: 10%;
+    height: 60vh;
+}

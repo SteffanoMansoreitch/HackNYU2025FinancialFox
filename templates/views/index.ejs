@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <title>nyuhack2025</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Spinnaker&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="header">
+        <div class="name">
+        <h1 class="profile-name"><%= data.name%>'s Pet</h1>
+        </div>
+    <form action="/petroom" method="post" id="profile-form">
+    <div class="profile" onclick="submitForm()">
+        <div class="petname" style="--name: finance fox">Finance Fox</div>
+        <div class="pet-profile"><div class="sprite"></div></div>
+    </div>
+    </form>
+    </div>
+    <container class="data-container">
+    <container class="finance-data">
+        <h2>Monthly Expenses</h2>
+        <div class="chart-container">
+            <div class="chart-bar" style="--expense: 80%;">
+                <span class="expense rent"> Rent $<%= data.rent %></span>
+            </div>
+            <div class="chart-bar" style="--expense: 60%;">
+                <span class="expense transport"> Transport $<%= data.transport%></span>
+            </div>
+            <div class="chart-bar " style="--expense: 60%;">
+                <span class="expense food"> Food $<%= data.food %></span>
+            </div>
+            <div class="chart-bar" style="--expense: 60%;">
+                <span class="expense entertainment"> Entertainment $<%= data.entertainment%></span>
+            </div>
+            <div class="chart-bar" style="--expense: 60%;">
+                <span class="expense utilities"> Utilities $<%= data.utilities%></span>
+            </div>
+            <div class="chart-bar" style="--expense: 60%;">
+                <span class="expense Healthcare"> Healthcare $<%= data.healthcare %></span>
+            </div>
+            <div class="chart-bar" style="--expense: 60%;">
+                <span class="expense miscellaneous"> Miscellaneous $<%= data.misc %></span>
+            </div>
+        </div>
+    </container>
+    <container class="progress-data">
+    <h2>Progress</h2>
+    </container>
+
+</body>
+</html>
