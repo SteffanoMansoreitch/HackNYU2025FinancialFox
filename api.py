@@ -3,8 +3,27 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager, creat
 from flask_bcrypt import Bcrypt
 from pymongo import MongoClient
 import pandas as pd
-import os
 from flask_cors import CORS
+import matplotlib.pyplot as plt
+from transformers import pipeline as hf_pipeline
+from datetime import datetime, timedelta
+import requests
+from pyngrok import ngrok
+
+public_url = ngrok.connect(5000)
+print("Ngrok URL:", public_url)
+
+# Automatically get ngrok URL from Colab
+def get_colab_ngrok_url():
+    try:
+        response = requests.get("http://localhost:4040/api/tunnels")  # ngrok's API
+        tunnels = response.json()["tunnels"]
+        for tunnel in tunnels:
+            if tunnel["proto"] == "http":
+                return tunnel["public_url"]
+    except Exception as e:
+        print("Error fetching ngrok URL:", e)
+    return None
 
 # Flask app and configurations
 app = Flask(__name__)
@@ -19,6 +38,8 @@ client = MongoClient(MONGO_URI)
 db = client["clients"]
 users_collection = db["users"]
 transactions_collection = db["transactions"]
+
+COLAB_AI_URL = get_colab_ngrok_url()
 
 # Ensure unique email for users
 users_collection.create_index("email", unique=True)
@@ -106,19 +127,59 @@ def delete_user():
 
     return jsonify({'message': f'User {email} deleted successfully'}), 200
 
-#categorize transactions as it is in the code
-@app.route('/categorize_transactions', methods=['POST'])
+@app.route('/process_transactions', methods=['POST'])
 @jwt_required()
-def categorize_transactions():
-    data = request.json.get('transactions', [])
-    df = pd.DataFrame(data)
-    categorizer = TransactionCategorizer()
-    categorized_data = categorizer.categorize(df)
-    return categorized_data.to_json(orient='records'), 200
+def process_transactions_api():
+    current_user_email = get_jwt_identity()
+    data = request.json['data']
+    state_tier = request.json['state_tier']
+    total_savings = request.json['total_savings']
+    goals = request.json['goals']
 
-# Function to run the Flask app programmatically
-def start_api():
-    app.run(port=5000, debug=False, use_reloader=False)  # Disable reloader for threading
+    # Forward data to Colab AI with the JWT token
+    token = request.headers.get('Authorization')  # Reuse the existing token
+    headers = {"Authorization": token}
 
-if __name__ == '__main__':
-    start_api()
+    try:
+        response = requests.post(f"{COLAB_AI_URL}/process_transactions", json={
+            "data": data,
+            "state_tier": state_tier,
+            "total_savings": total_savings,
+            "goals": goals
+        }, headers=headers)
+
+        if response.status_code == 200:
+            return jsonify(response.json()), 200
+        else:
+            return jsonify({"error": "AI processing failed"}), response.status_code
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/apply_additional_funding', methods=['POST'])
+@jwt_required()
+def apply_additional_funding_api():
+    current_user_email = get_jwt_identity()
+    goals = request.json['goals']
+    monthly_savings = request.json['monthly_savings']
+
+    # Forward data to Colab AI with the JWT token
+    token = request.headers.get('Authorization')  # Reuse the existing token
+    headers = {"Authorization": token}
+
+    try:
+        response = requests.post(f"{COLAB_AI_URL}/apply_additional_funding", json={
+            "goals": goals,
+            "monthly_savings": monthly_savings
+        }, headers=headers)
+
+        if response.status_code == 200:
+            return jsonify(response.json()), 200
+        else:
+            return jsonify({"error": "AI processing failed"}), response.status_code
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(port=5000)
