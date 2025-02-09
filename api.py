@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager, create_access_token
 from flask_bcrypt import Bcrypt
 from pymongo import MongoClient
@@ -8,26 +8,13 @@ import matplotlib.pyplot as plt
 from transformers import pipeline as hf_pipeline
 from datetime import datetime, timedelta
 import requests
-from pyngrok import ngrok
-
-public_url = ngrok.connect(5000)
-print("Ngrok URL:", public_url)
-
-# Automatically get ngrok URL from Colab
-def get_colab_ngrok_url():
-    try:
-        response = requests.get("http://localhost:4040/api/tunnels")  # ngrok's API
-        tunnels = response.json()["tunnels"]
-        for tunnel in tunnels:
-            if tunnel["proto"] == "http":
-                return tunnel["public_url"]
-    except Exception as e:
-        print("Error fetching ngrok URL:", e)
-    return None
+import os
 
 # Flask app and configurations
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "SECURITY"
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['STATIC_FOLDER'] = 'static'
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
 CORS(app)  # Enable CORS for all routes
@@ -39,14 +26,51 @@ db = client["clients"]
 users_collection = db["users"]
 transactions_collection = db["transactions"]
 
-COLAB_AI_URL = get_colab_ngrok_url()
+COLAB_AI_URL = "https://834d-34-87-47-157.ngrok-free.app"
 
 # Ensure unique email for users
 users_collection.create_index("email", unique=True)
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    # Example data to render the template
+    data = {
+        "name": "Your name",
+        "entertainment": 200,
+        "entertainment_percentage": 15,
+        "utilities": 50,
+        "utilities_percentage": 5,
+        "healthcare": 100,
+        "healthcare_percentage": 7,
+        "transport": 300,
+        "transport_percentage": 22,
+        "food": 100,
+        "food_percentage": 7,
+        "rent": 500,
+        "rent_percentage": 37,
+        "misc": 100,
+        "misc_percentage": 7,
+        "total": 1350,
+        "savings": 180
+    }
+
+    def update_sprite(savings):
+        if savings < 150:
+            # low savings must return sad sprite
+            return "260px -90px"
+        elif savings < 300:
+            # must return neutral sprite
+            return "-88px -90px"
+        else:
+            # must return happy sprite
+            return "530px -450px"
+
+    sprite_position = update_sprite(data["savings"])
+    return render_template('index.html', data=data, sprite_position=sprite_position)
+
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory(app.config['STATIC_FOLDER'], path)
 
 @app.route('/dashboard')
 def dashboard():
